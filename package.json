@@ -1,0 +1,19 @@
+{
+  "name": "zeedle-server",
+  "version": "1.0.0",
+  "description": "Zeedle Backend Server",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "author": "Steve Rayner",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "mongodb": "^3.1.6"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
+}
