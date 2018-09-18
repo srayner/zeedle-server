@@ -16,8 +16,8 @@ module.exports = function(app, db) {
 
   // CREATE Task
   app.post("/tasks", (req, res) => {
-    const task = { content: "A new note from node." };
-    db.collection("tasks").insert(task, (err, result) => {
+    const task = req.body;
+    db.collection("tasks").insertOne(task, (err, result) => {
       if (err) {
         res.send({ error: "An error has occurred" });
       } else {
@@ -40,10 +40,17 @@ module.exports = function(app, db) {
   });
 
   // UPDATE Task
-  app.patch("/task/:id", (req, res) => {
+  app.patch("/tasks/:id", (req, res) => {
     const id = req.params.id;
-    const details = { _id: new ObjectID(id) };
-    const note = { content: req.body.body };
+    const query = { _id: new ObjectID(id) };
+    const update = { $set: { title: req.body.title } };
+    db.collection("tasks").updateOne(query, update, function(err, item) {
+      if (err) {
+        res.send({ error: "An error has occured." });
+      } else {
+        res.send({ message: "Task " + id + " updated." });
+      }
+    });
   });
 
   // DELETE Task
