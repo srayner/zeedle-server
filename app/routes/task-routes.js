@@ -29,7 +29,6 @@ module.exports = function(app, db) {
   // READ Task
   app.get("/tasks/:id", (req, res) => {
     const id = req.params.id;
-    console.log(id);
     const details = { _id: new ObjectID(id) };
     db.collection("tasks").findOne(details, (err, item) => {
       if (err) {
@@ -55,7 +54,7 @@ module.exports = function(app, db) {
       if (err) {
         res.send({ error: "An error occured" });
       } else {
-        res.send("Task " + id + " deleted!");
+        res.send({ message: "Task " + id + " deleted!" });
       }
     });
   });
