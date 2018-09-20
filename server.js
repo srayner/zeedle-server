@@ -1,5 +1,4 @@
 const express = require("express");
-const cors = require("cors");
 const MongoClient = require("mongodb").MongoClient;
 const bodyParser = require("body-parser");
 const port = 8000;
