@@ -1,27 +1,26 @@
 var ObjectID = require("mongodb").ObjectID;
+const Task = require("../model/task-model").Task;
 
 module.exports = function(app, db) {
   // INDEX Tasks
   app.get("/tasks", (req, res) => {
-    db.collection("tasks")
-      .find({})
-      .toArray(function(err, result) {
-        if (err) {
-          res.send({ error: "An error occurred" });
-        } else {
-          res.send(result);
-        }
-      });
+    Task.find().then((err, tasks) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(tasks);
+      }
+    });
   });
 
   // CREATE Task
   app.post("/tasks", (req, res) => {
-    const task = req.body;
-    db.collection("tasks").insertOne(task, (err, result) => {
+    const data = new Task(req.body);
+    data.save((err, task) => {
       if (err) {
-        res.send({ error: "An error has occurred" });
+        res.send({ error: "An error has occurred." });
       } else {
-        res.send(result.ops[0]);
+        res.send(task);
       }
     });
   });
