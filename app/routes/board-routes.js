@@ -1,9 +1,9 @@
 var ObjectID = require("mongodb").ObjectID;
 
 module.exports = function(app, db) {
-  // INDEX Columns
-  app.get("/columns", (req, res) => {
-    db.collection("columns")
+  // INDEX Boards
+  app.get("/boards", (req, res) => {
+    db.collection("boards")
       .find({})
       .toArray(function(err, result) {
         if (err) {
@@ -14,10 +14,10 @@ module.exports = function(app, db) {
       });
   });
 
-  // CREATE Column
-  app.post("/columns", (req, res) => {
-    const column = req.body;
-    db.collection("columns").insertOne(column, (err, result) => {
+  // CREATE Board
+  app.post("/boards", (req, res) => {
+    const board = req.body;
+    db.collection("boards").insertOne(board, (err, result) => {
       if (err) {
         res.send({ error: "An error has occurred" });
       } else {
@@ -27,10 +27,10 @@ module.exports = function(app, db) {
   });
 
   // READ Task
-  app.get("/columns/:id", (req, res) => {
+  app.get("/boards/:id", (req, res) => {
     const id = req.params.id;
     const details = { _id: new ObjectID(id) };
-    db.collection("columns").findOne(details, (err, item) => {
+    db.collection("boards").findOne(details, (err, item) => {
       if (err) {
         res.send({ error: "An error has occured." });
       } else {
@@ -39,34 +39,34 @@ module.exports = function(app, db) {
     });
   });
 
-  // UPDATE Column
-  app.patch("/columns/:id", (req, res) => {
+  // UPDATE Board
+  app.patch("/boards/:id", (req, res) => {
     const id = req.params.id;
     const query = { _id: new ObjectID(id) };
     const update = {
       $set: {
         title: req.body.title,
-        taskIds: req.body.taskIds
+        columnIds: req.body.columnIds
       }
     };
-    db.collection("columns").updateOne(query, update, function(err, item) {
+    db.collection("boards").updateOne(query, update, function(err, item) {
       if (err) {
         res.send({ error: "An error has occured." });
       } else {
-        res.send({ message: "Column " + id + " updated." });
+        res.send({ message: "Board " + id + " updated." });
       }
     });
   });
 
-  // DELETE Column
-  app.delete("/columns/:id", (req, res) => {
+  // DELETE Board
+  app.delete("/boards/:id", (req, res) => {
     const id = req.params.id;
     const details = { _id: new ObjectID(id) };
-    db.collection("columns").remove(details, (err, item) => {
+    db.collection("boards").remove(details, (err, item) => {
       if (err) {
         res.send({ error: "An error occured" });
       } else {
-        res.send({ message: "Column " + id + " deleted!" });
+        res.send({ message: "Board " + id + " deleted!" });
       }
     });
   });
