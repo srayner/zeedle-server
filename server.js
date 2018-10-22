@@ -14,7 +14,7 @@ var allowCrossDomain = function(req, res, next) {
 app.use(bodyParser.json());
 app.use(allowCrossDomain);
 
-mongoose.connect("mongodb://localhost:27017/zeedle");
+mongoose.connect("mongodb://mongo:27017/zeedle");
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function() {
