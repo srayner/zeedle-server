@@ -42,7 +42,9 @@ module.exports = function(app, db) {
   app.patch("/tasks/:id", (req, res) => {
     const id = req.params.id;
     const query = { _id: new ObjectID(id) };
-    const update = { $set: { title: req.body.title } };
+    const update = {
+      $set: { title: req.body.title, description: req.body.description }
+    };
     db.collection("tasks").updateOne(query, update, function(err, item) {
       if (err) {
         res.send({ error: "An error has occured." });
