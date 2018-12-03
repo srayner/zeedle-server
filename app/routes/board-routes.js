@@ -26,7 +26,7 @@ module.exports = function(app, db) {
     });
   });
 
-  // READ Task
+  // READ Board
   app.get("/boards/:id", (req, res) => {
     const id = req.params.id;
     const details = { _id: new ObjectID(id) };
@@ -46,7 +46,8 @@ module.exports = function(app, db) {
     const update = {
       $set: {
         title: req.body.title,
-        columnIds: req.body.columnIds
+        columnIds: req.body.columnIds,
+        starred: req.body.starred
       }
     };
     db.collection("boards").updateOne(query, update, function(err, item) {
