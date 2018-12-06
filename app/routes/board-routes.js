@@ -46,7 +46,7 @@ module.exports = function(app, db) {
     const update = {
       $set: {
         title: req.body.title,
-        columnIds: req.body.columnIds,
+        listIds: req.body.listIds,
         starred: req.body.starred
       }
     };

@@ -1,8 +1,8 @@
 var ObjectID = require("mongodb").ObjectID;
 
 module.exports = function(app, db) {
-  // INDEX Columns
-  app.get("/columns", (req, res) => {
+  // INDEX Lists
+  app.get("/lists", (req, res) => {
     if (req.query.hasOwnProperty("boardId")) {
       db.collection("boards").findOne(
         { _id: new ObjectID(req.query.boardId) },
@@ -11,10 +11,10 @@ module.exports = function(app, db) {
             res.send({ error: "An error occured" });
           } else {
             if (board !== null) {
-              const objectIds = board.columnIds.map(function(id) {
+              const objectIds = board.listIds.map(function(id) {
                 return new ObjectID(id);
               });
-              db.collection("columns")
+              db.collection("lists")
                 .find({ _id: { $in: objectIds } })
                 .toArray(function(err, result) {
                   if (err) {
@@ -30,7 +30,7 @@ module.exports = function(app, db) {
         }
       );
     } else {
-      db.collection("columns")
+      db.collection("lists")
         .find({})
         .toArray(function(err, result) {
           if (err) {
@@ -42,10 +42,10 @@ module.exports = function(app, db) {
     }
   });
 
-  // CREATE Column
-  app.post("/columns", (req, res) => {
-    const column = req.body;
-    db.collection("columns").insertOne(column, (err, result) => {
+  // CREATE List
+  app.post("/lists", (req, res) => {
+    const list = req.body;
+    db.collection("lists").insertOne(list, (err, result) => {
       if (err) {
         res.send({ error: "An error has occurred" });
       } else {
@@ -54,11 +54,11 @@ module.exports = function(app, db) {
     });
   });
 
-  // READ Task
-  app.get("/columns/:id", (req, res) => {
+  // READ List
+  app.get("/lists/:id", (req, res) => {
     const id = req.params.id;
     const details = { _id: new ObjectID(id) };
-    db.collection("columns").findOne(details, (err, item) => {
+    db.collection("lists").findOne(details, (err, item) => {
       if (err) {
         res.send({ error: "An error has occured." });
       } else {
@@ -67,8 +67,8 @@ module.exports = function(app, db) {
     });
   });
 
-  // UPDATE Column
-  app.patch("/columns/:id", (req, res) => {
+  // UPDATE List
+  app.patch("/lists/:id", (req, res) => {
     const id = req.params.id;
     const query = { _id: new ObjectID(id) };
     const update = {
@@ -77,24 +77,24 @@ module.exports = function(app, db) {
         taskIds: req.body.taskIds
       }
     };
-    db.collection("columns").updateOne(query, update, function(err, item) {
+    db.collection("lists").updateOne(query, update, function(err, item) {
       if (err) {
         res.send({ error: "An error has occured." });
       } else {
-        res.send({ message: "Column " + id + " updated." });
+        res.send({ message: "List " + id + " updated." });
       }
     });
   });
 
-  // DELETE Column
-  app.delete("/columns/:id", (req, res) => {
+  // DELETE List
+  app.delete("/lists/:id", (req, res) => {
     const id = req.params.id;
     const details = { _id: new ObjectID(id) };
-    db.collection("columns").remove(details, (err, item) => {
+    db.collection("lists").remove(details, (err, item) => {
       if (err) {
         res.send({ error: "An error occured" });
       } else {
-        res.send({ message: "Column " + id + " deleted!" });
+        res.send({ message: "List " + id + " deleted!" });
       }
     });
   });
