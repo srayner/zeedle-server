@@ -1,9 +1,10 @@
 var ObjectID = require("mongodb").ObjectID;
 const Task = require("../model/task-model").Task;
+const checkAuth = require("../middleware/check-auth");
 
 module.exports = function(app, db) {
   // INDEX Tasks
-  app.get("/tasks", (req, res) => {
+  app.get("/tasks", checkAuth, (req, res) => {
     Task.find().then((err, tasks) => {
       if (err) {
         res.send(err);
@@ -14,7 +15,7 @@ module.exports = function(app, db) {
   });
 
   // CREATE Task
-  app.post("/tasks", (req, res) => {
+  app.post("/tasks", checkAuth, (req, res) => {
     const data = new Task(req.body);
     data.save((err, task) => {
       if (err) {
@@ -26,7 +27,7 @@ module.exports = function(app, db) {
   });
 
   // READ Task
-  app.get("/tasks/:id", (req, res) => {
+  app.get("/tasks/:id", checkAuth, (req, res) => {
     const id = req.params.id;
     const details = { _id: new ObjectID(id) };
     db.collection("tasks").findOne(details, (err, item) => {
@@ -39,7 +40,7 @@ module.exports = function(app, db) {
   });
 
   // UPDATE Task
-  app.patch("/tasks/:id", (req, res) => {
+  app.patch("/tasks/:id", checkAuth, (req, res) => {
     const id = req.params.id;
     const query = { _id: new ObjectID(id) };
     const update = {
@@ -55,7 +56,7 @@ module.exports = function(app, db) {
   });
 
   // DELETE Task
-  app.delete("/tasks/:id", (req, res) => {
+  app.delete("/tasks/:id", checkAuth, (req, res) => {
     const id = req.params.id;
     const details = { _id: new ObjectID(id) };
     db.collection("tasks").remove(details, (err, item) => {

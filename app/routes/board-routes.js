@@ -1,8 +1,9 @@
 var ObjectID = require("mongodb").ObjectID;
+const checkAuth = require("../middleware/check-auth");
 
 module.exports = function(app, db) {
   // INDEX Boards
-  app.get("/boards", (req, res) => {
+  app.get("/boards", checkAuth, (req, res) => {
     db.collection("boards")
       .find({})
       .toArray(function(err, result) {
@@ -15,7 +16,7 @@ module.exports = function(app, db) {
   });
 
   // CREATE Board
-  app.post("/boards", (req, res) => {
+  app.post("/boards", checkAuth, (req, res) => {
     const board = req.body;
     db.collection("boards").insertOne(board, (err, result) => {
       if (err) {
@@ -27,7 +28,7 @@ module.exports = function(app, db) {
   });
 
   // READ Board
-  app.get("/boards/:id", (req, res) => {
+  app.get("/boards/:id", checkAuth, (req, res) => {
     const id = req.params.id;
     const details = { _id: new ObjectID(id) };
     db.collection("boards").findOne(details, (err, item) => {
@@ -40,7 +41,7 @@ module.exports = function(app, db) {
   });
 
   // UPDATE Board
-  app.patch("/boards/:id", (req, res) => {
+  app.patch("/boards/:id", checkAuth, (req, res) => {
     const id = req.params.id;
     const query = { _id: new ObjectID(id) };
     const update = {
@@ -60,7 +61,7 @@ module.exports = function(app, db) {
   });
 
   // DELETE Board
-  app.delete("/boards/:id", (req, res) => {
+  app.delete("/boards/:id", checkAuth, (req, res) => {
     const id = req.params.id;
     const details = { _id: new ObjectID(id) };
     db.collection("boards").remove(details, (err, item) => {

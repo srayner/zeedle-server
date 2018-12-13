@@ -1,8 +1,9 @@
 var ObjectID = require("mongodb").ObjectID;
+const checkAuth = require("../middleware/check-auth");
 
 module.exports = function(app, db) {
   // INDEX Lists
-  app.get("/lists", (req, res) => {
+  app.get("/lists", checkAuth, (req, res) => {
     if (req.query.hasOwnProperty("boardId")) {
       db.collection("boards").findOne(
         { _id: new ObjectID(req.query.boardId) },
@@ -43,7 +44,7 @@ module.exports = function(app, db) {
   });
 
   // CREATE List
-  app.post("/lists", (req, res) => {
+  app.post("/lists", checkAuth, (req, res) => {
     const list = req.body;
     db.collection("lists").insertOne(list, (err, result) => {
       if (err) {
@@ -55,7 +56,7 @@ module.exports = function(app, db) {
   });
 
   // READ List
-  app.get("/lists/:id", (req, res) => {
+  app.get("/lists/:id", checkAuth, (req, res) => {
     const id = req.params.id;
     const details = { _id: new ObjectID(id) };
     db.collection("lists").findOne(details, (err, item) => {
@@ -68,7 +69,7 @@ module.exports = function(app, db) {
   });
 
   // UPDATE List
-  app.patch("/lists/:id", (req, res) => {
+  app.patch("/lists/:id", checkAuth, (req, res) => {
     const id = req.params.id;
     const query = { _id: new ObjectID(id) };
     const update = {
@@ -87,7 +88,7 @@ module.exports = function(app, db) {
   });
 
   // DELETE List
-  app.delete("/lists/:id", (req, res) => {
+  app.delete("/lists/:id", checkAuth, (req, res) => {
     const id = req.params.id;
     const details = { _id: new ObjectID(id) };
     db.collection("lists").remove(details, (err, item) => {

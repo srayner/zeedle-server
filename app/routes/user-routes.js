@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const User = require("../model/user");
 const jwt = require("jsonwebtoken");
+const checkAuth = require("../middleware/check-auth");
 
 module.exports = function(app, db) {
   // USER signup
@@ -78,7 +79,7 @@ module.exports = function(app, db) {
   });
 
   // USER delete
-  app.delete("/user/:id", (req, res) => {
+  app.delete("/user/:id", checkAuth, (req, res) => {
     User.remove({ _id: req.body.id })
       .exec()
       .then(() => {
@@ -90,7 +91,7 @@ module.exports = function(app, db) {
   });
 
   // INDEX users
-  app.get("/users", (req, res) => {
+  app.get("/users", checkAuth, (req, res) => {
     db.collection("users")
       .find({})
       .toArray(function(err, result) {
