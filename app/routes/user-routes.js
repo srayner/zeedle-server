@@ -41,4 +41,29 @@ module.exports = function(app, db) {
   app.post("/user/sign-in", (req, res) => {
     res.send({ result: "ok" });
   });
+
+  // USER delete
+  app.delete("/user/:id", (req, res) => {
+    User.remove({ _id: req.body.id })
+      .exec()
+      .then(() => {
+        res.status(200).json({ Message: "User deleted." });
+      })
+      .catch(() => {
+        res.status(500).json({ error: err });
+      });
+  });
+
+  // INDEX users
+  app.get("/users", (req, res) => {
+    db.collection("users")
+      .find({})
+      .toArray(function(err, result) {
+        if (err) {
+          res.send({ error: "An error occurred" });
+        } else {
+          res.send(result);
+        }
+      });
+  });
 };
