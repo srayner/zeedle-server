@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const User = require("../model/user");
+const jwt = require("jsonwebtoken");
 
 module.exports = function(app, db) {
   // USER signup
@@ -39,6 +40,7 @@ module.exports = function(app, db) {
 
   // USER login
   app.post("/user/login", (req, res) => {
+    console.log(process.env);
     User.find({ email: req.body.email })
       .exec()
       .then(users => {
@@ -53,7 +55,20 @@ module.exports = function(app, db) {
               return res.status(401).json({ Message: "Unauthorized." });
             }
             if (result) {
-              return res.status(200).json({ message: "Login suceeded." });
+              const token = jwt.sign(
+                {
+                  email: users[0].email,
+                  userId: users[0]._id
+                },
+                process.env.JWT_KEY,
+                {
+                  expiresIn: "1h"
+                }
+              );
+              return res.status(200).json({
+                message: "Login suceeded.",
+                token: token
+              });
             }
             return res.status(401).json({ Message: "Unauthorized." });
           }
