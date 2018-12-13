@@ -37,9 +37,29 @@ module.exports = function(app, db) {
       .catch();
   });
 
-  // USER sign in
-  app.post("/user/sign-in", (req, res) => {
-    res.send({ result: "ok" });
+  // USER login
+  app.post("/user/login", (req, res) => {
+    User.find({ email: req.body.email })
+      .exec()
+      .then(users => {
+        if (users.length < 1) {
+          return res.status(401).json({ Message: "Unauthorized." });
+        }
+        bcrypt.compare(
+          req.body.password,
+          users[0].password,
+          (error, result) => {
+            if (error) {
+              return res.status(401).json({ Message: "Unauthorized." });
+            }
+            if (result) {
+              return res.status(200).json({ message: "Login suceeded." });
+            }
+            return res.status(401).json({ Message: "Unauthorized." });
+          }
+        );
+      })
+      .catch();
   });
 
   // USER delete
