@@ -1,10 +1,13 @@
 require("dotenv").load();
 
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const port = 8000;
 const app = express();
+
+app.use(cors());
 
 var allowCrossDomain = function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
