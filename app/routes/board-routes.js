@@ -48,7 +48,8 @@ module.exports = function(app, db) {
       $set: {
         title: req.body.title,
         listIds: req.body.listIds,
-        starred: req.body.starred
+        starred: req.body.starred,
+        colour: req.body.colour
       }
     };
     db.collection("boards").updateOne(query, update, function(err, item) {
