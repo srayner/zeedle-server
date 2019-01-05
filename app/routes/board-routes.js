@@ -49,7 +49,8 @@ module.exports = function(app, db) {
         title: req.body.title,
         listIds: req.body.listIds,
         starred: req.body.starred,
-        colour: req.body.colour
+        colour: req.body.colour,
+        visibility: req.body.visibility
       }
     };
     db.collection("boards").updateOne(query, update, function(err, item) {
