@@ -3,8 +3,22 @@ const bcrypt = require("bcrypt");
 const User = require("../model/user");
 const jwt = require("jsonwebtoken");
 const checkAuth = require("../middleware/check-auth");
+const verifyEmail = require("../email/email-verify");
+const EmailService = require("../helpers/email");
 
 module.exports = function(app, db) {
+  function getAccessToken(_id, email) {
+    return jwt.sign({ _id, email }, process.env.JWT_KEY, {
+      expiresIn: "15m"
+    });
+  }
+
+  function getRefreshToken(_id, email) {
+    return jwt.sign({ _id, email }, process.env.JWT_REFRESH_KEY, {
+      expiresIn: "24h"
+    });
+  }
+
   // USER signup
   app.post("/user/signup", (req, res) => {
     User.find({ email: req.body.email })
@@ -22,11 +36,24 @@ module.exports = function(app, db) {
               const user = new User({
                 _id: new mongoose.Types.ObjectId(),
                 email: req.body.email,
-                password: hash
+                password: hash,
+                verified: false
               });
+              const token = jwt.sign({ userId: user._id }, process.env.JWT_KEY);
+              const url = process.env.LOCAL_SERVER + "/verify?token=" + token;
+              const link = '<a href="' + url + '">' + url + "</a>";
+              const mailSubject = verifyEmail.subject;
+              const mailBody = verifyEmail.body(link);
               user
                 .save()
                 .then(result => {
+                  EmailService.sendMail(req.body.email, mailSubject, mailBody)
+                    .then(() => {
+                      console.log("Mail sent ok.");
+                    })
+                    .catch(err => {
+                      console.log("Error sending mail.", err);
+                    });
                   res.status(201).json({ message: "User created." });
                 })
                 .catch(err => {
