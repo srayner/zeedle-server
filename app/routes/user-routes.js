@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const User = require("../model/user");
 const jwt = require("jsonwebtoken");
 const checkAuth = require("../middleware/check-auth");
-const verifyEmail = require("../email/email-verify");
+const verifyEmail = require("../email/account-verify");
 const EmailService = require("../helpers/email");
 
 module.exports = function(app, db) {
@@ -64,6 +64,31 @@ module.exports = function(app, db) {
         }
       })
       .catch();
+  });
+
+  // USER verify
+  app.post("/user/verify", (req, res) => {
+    try {
+      const token = req.body.token;
+      const decoded = jwt.verify(token, process.env.JWT_KEY);
+      const details = { _id: new mongoose.Types.ObjectId(decoded.userId) };
+      User.find(details)
+        .exec()
+        .then(users => {
+          if (users.length < 1) {
+            return res.status(400).json({ Message: "Bad request." });
+          }
+          users[0].verified = true;
+          users[0].save();
+          const accessToken = getAccessToken(users[0]._id, users[0].email);
+          const refreshToken = getRefreshToken(users[0]._id, users[0].email);
+          const message = "User verified, and logged in.";
+          res.status(200).json({ message, accessToken, refreshToken });
+        });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: "Bad request." });
+    }
   });
 
   // USER login
