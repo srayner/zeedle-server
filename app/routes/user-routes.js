@@ -172,12 +172,13 @@ module.exports = function(app, db) {
   });
 
   // PATCH user
-  app.patch("/user/:id", checkAuth, (req, res) => {
-    var patch = { ...req.body };
-    delete patch.password;
-    delete patch.email;
-    delete patch.verified;
-    User.findByIdAndUpdate(req.params.id, patch)
+  app.patch("/user", checkAuth, (req, res) => {
+    const userId = req.userData.userId;
+    var patch = {
+      initials: req.body.initials,
+      fullname: req.body.fullname
+    };
+    User.findByIdAndUpdate(userId, patch)
       .exec()
       .then(users => {
         if (users.length < 1) {
