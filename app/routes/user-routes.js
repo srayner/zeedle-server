@@ -154,4 +154,39 @@ module.exports = function(app, db) {
         }
       });
   });
+
+  // GET user
+  app.get("/user/:id", checkAuth, (req, res) => {
+    const query = { _id: new mongoose.Types.ObjectId(req.params.id) };
+    User.find(query)
+      .exec()
+      .then(users => {
+        if (users.length < 1) {
+          return res.status(404).json({ Message: "Not found." });
+        }
+        res.send(users[0]);
+      })
+      .catch(err => {
+        return res.status(500).json({ Message: "Sorry, an error occured." });
+      });
+  });
+
+  // PATCH user
+  app.patch("/user/:id", checkAuth, (req, res) => {
+    var patch = { ...req.body };
+    delete patch.password;
+    delete patch.email;
+    delete patch.verified;
+    User.findByIdAndUpdate(req.params.id, patch)
+      .exec()
+      .then(users => {
+        if (users.length < 1) {
+          return res.status(404).json({ Message: "Not found." });
+        }
+        res.send(users[0]);
+      })
+      .catch(err => {
+        return res.status(500).json({ Message: "Sorry, an error occured." });
+      });
+  });
 };
