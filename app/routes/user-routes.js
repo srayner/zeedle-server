@@ -93,7 +93,6 @@ module.exports = function(app, db) {
 
   // USER login
   app.post("/user/login", (req, res) => {
-    console.log(process.env);
     User.find({ email: req.body.email })
       .exec()
       .then(users => {
@@ -115,12 +114,35 @@ module.exports = function(app, db) {
                 },
                 process.env.JWT_KEY,
                 {
-                  expiresIn: "1h"
+                  expiresIn: "15m"
+                }
+              );
+              const refreshToken = jwt.sign(
+                {
+                  email: users[0].email,
+                  userId: users[0]._id
+                },
+                process.env.JWT_REFRESH_KEY,
+                {
+                  expiresIn: "24h"
+                }
+              );
+              db.collection("tokens").insertOne(
+                { refreshToken },
+                (err, result) => {
+                  if (err) {
+                    console.log(err);
+                  }
                 }
               );
               return res.status(200).json({
                 message: "Login suceeded.",
-                token: token
+                user: {
+                  fullname: users[0].fullname,
+                  initials: users[0].initials,
+                  token: token,
+                  refreshToken: refreshToken
+                }
               });
             }
             return res.status(401).json({ Message: "Unauthorized." });
