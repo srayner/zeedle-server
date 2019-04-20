@@ -6,6 +6,12 @@ const checkAuth = require("../middleware/check-auth");
 const verifyEmail = require("../email/account-verify");
 const EmailService = require("../helpers/email");
 
+function generateUsername(email) {
+  const name = email.split(/[@.]+/)[0];
+  const random = Math.floor(Math.random() * 10000);
+  return name + random;
+}
+
 module.exports = function(app, db) {
   function getAccessToken(_id, email) {
     return jwt.sign({ _id, email }, process.env.JWT_KEY, {
@@ -33,8 +39,10 @@ module.exports = function(app, db) {
             if (err) {
               return res.status(500).json({ error: err });
             } else {
+              const username = generateUsername(req.body.email);
               const user = new User({
                 _id: new mongoose.Types.ObjectId(),
+                username: username,
                 email: req.body.email,
                 password: hash,
                 verified: false
