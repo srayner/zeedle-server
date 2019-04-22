@@ -146,6 +146,7 @@ module.exports = function(app, db) {
               return res.status(200).json({
                 message: "Login suceeded.",
                 user: {
+                  username: users[0].username,
                   fullname: users[0].fullname,
                   initials: users[0].initials,
                   token: token,
