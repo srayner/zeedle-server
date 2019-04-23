@@ -1,3 +1,8 @@
+/**
+ * There is a lot of duplication in this file,
+ * and some of the methods are too long.
+ * It will need refactoring at some point.
+ */
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const User = require("../model/user");
@@ -135,14 +140,6 @@ module.exports = function(app, db) {
                   expiresIn: "24h"
                 }
               );
-              db.collection("tokens").insertOne(
-                { refreshToken },
-                (err, result) => {
-                  if (err) {
-                    console.log(err);
-                  }
-                }
-              );
               return res.status(200).json({
                 message: "Login suceeded.",
                 user: {
@@ -159,6 +156,53 @@ module.exports = function(app, db) {
         );
       })
       .catch();
+  });
+
+  // USER refresh
+  app.post("/user/refresh", (req, res) => {
+    const refreshToken = req.body.refreshToken;
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ Message: "Unauthorized." });
+      }
+      User.find({ email: decoded.email })
+        .exec()
+        .then(users => {
+          if (users.length < 1) {
+            return res.status(401).json({ Message: "Unauthorized." });
+          }
+          const token = jwt.sign(
+            {
+              email: users[0].email,
+              userId: users[0]._id
+            },
+            process.env.JWT_KEY,
+            {
+              expiresIn: "15m"
+            }
+          );
+          const refreshToken = jwt.sign(
+            {
+              email: users[0].email,
+              userId: users[0]._id
+            },
+            process.env.JWT_REFRESH_KEY,
+            {
+              expiresIn: "24h"
+            }
+          );
+          return res.status(200).json({
+            message: "Refresh suceeded.",
+            user: {
+              username: users[0].username,
+              fullname: users[0].fullname,
+              initials: users[0].initials,
+              token: token,
+              refreshToken: refreshToken
+            }
+          });
+        });
+    });
   });
 
   // USER delete
