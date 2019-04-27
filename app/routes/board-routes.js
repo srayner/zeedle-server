@@ -5,7 +5,7 @@ module.exports = function(app, db) {
   // INDEX Boards
   app.get("/boards", checkAuth, (req, res) => {
     db.collection("boards")
-      .find({})
+      .find({ owner: req.userData.userId })
       .toArray(function(err, result) {
         if (err) {
           res.send({ error: "An error occurred" });
