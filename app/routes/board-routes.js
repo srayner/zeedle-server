@@ -18,6 +18,7 @@ module.exports = function(app, db) {
   // CREATE Board
   app.post("/boards", checkAuth, (req, res) => {
     const board = req.body;
+    board.owner = req.userData.userId;
     db.collection("boards").insertOne(board, (err, result) => {
       if (err) {
         res.send({ error: "An error has occurred" });
