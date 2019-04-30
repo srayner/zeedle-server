@@ -5,7 +5,10 @@ const checkAuth = require("../middleware/check-auth");
 module.exports = function(app, db) {
   // INDEX Tasks
   app.get("/tasks", checkAuth, (req, res) => {
-    Task.find().then((err, tasks) => {
+    const query = req.query.hasOwnProperty("boardId")
+      ? { boardId: req.query.boardId }
+      : {};
+    Task.find(query).then((err, tasks) => {
       if (err) {
         res.send(err);
       } else {
