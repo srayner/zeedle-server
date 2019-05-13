@@ -22,6 +22,7 @@ module.exports = function(app, db) {
     const data = new Task(req.body);
     data.save((err, task) => {
       if (err) {
+        console.log(err);
         res.send({ error: "An error has occurred." });
       } else {
         res.send(task);
